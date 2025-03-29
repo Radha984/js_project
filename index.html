@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Signup & Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url("mainbackground.jpg") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .form-title {
+            margin-bottom: 20px;
+            color: #222;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            font-size: 16px;
+            padding: 12px;
+        }
+
+        .btn-primary, .btn-guest {
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            padding: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ee093b, #3d2222);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, brown, #090909);
+        }
+
+        .btn-guest {
+            background: linear-gradient(135deg, #ffb347, #ffcc33);
+            border: none;
+        }
+
+        .btn-guest:hover {
+            background: linear-gradient(135deg, #ffa726, #ffb74d);
+        }
+
+        .links a {
+            font-weight: 700;
+            font-size: 16px;
+            color: #2575fc;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                background: url("mainbackground1.jpeg") no-repeat center center fixed;
+                background-size: cover;
+            }
+
+            .container-box {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .form-control,
+            .btn-primary,
+            .btn-guest {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+       
+        @media (max-width: 520px) {
+            body {
+                background: url("image (1).png") no-repeat center center fixed;
+                background-size: cover;
+            }
+        }
+        @media (min-width: 900px) and (max-width: 1093px) {
+            body {
+                background: url("mainbackground1.jpeg") no-repeat center center fixed;
+                background-size: cover;
+            }
+        }
+        
+       
+    </style>
+</head>
+<body>
+
+<div class="container-box" id="signup">
+    <h1 class="form-title">Signup</h1>
+    <form id="signupForm">
+        <div class="mb-3">
+            <input type="email" class="form-control" id="rEmail" placeholder="Email" required>
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" id="rpassword" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Signup</button>
+    </form>
+    <div class="links mt-3">
+        <p>Already Have an Account? <a href="#" id="loginLink">Login</a></p>
+    </div>
+    <button class="btn btn-guest" onclick="guestLogin()">Guest Login</button>
+</div>
+
+<div class="container-box" id="login" style="display:none;">
+    <h1 class="form-title">Login</h1>
+    <form id="loginForm">
+        <div class="mb-3">
+            <input type="email" class="form-control" id="lEmail" placeholder="Email" required>
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" id="lPassword" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <div class="links mt-3">
+        <p>Don't have an account? <a href="#" id="signupLink">Signup</a></p>
+    </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyATj0S_j-scaRO-OyqJhkdhj9nikmAZtVA",
+        authDomain: "loginpage-c44d3.firebaseapp.com",
+        projectId: "loginpage-c44d3",
+        storageBucket: "loginpage-c44d3.firebasestorage.app",
+        messagingSenderId: "880336797825",
+        appId: "1:880336797825:web:9461f5ed158b6c65340d80"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    // Signup
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('rEmail').value;
+        const password = document.getElementById('rpassword').value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                alert("Signup successful!");
+                showLoginForm();
+            })
+            .catch((error) => {
+                alert(`Signup failed: ${error.message}`);
+            });
+    });
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('lEmail').value;
+        const password = document.getElementById('lPassword').value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                alert("Login successful!");
+                window.location.href="main.html";
+            })
+            .catch((error) => {
+                alert(`Login failed: ${error.message}`);
+            });
+    });
+
+    // Show Signup Form
+    document.getElementById('signupLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        showSignupForm();
+    });
+
+    // Show Login Form
+    document.getElementById('loginLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        showLoginForm();
+    });
+
+    function showSignupForm() {
+        document.getElementById('signup').style.display = 'block';
+        document.getElementById('login').style.display = 'none';
+    }
+
+    function showLoginForm() {
+        document.getElementById('signup').style.display = 'none';
+        document.getElementById('login').style.display = 'block';
+    }
+
+    
+</script>
+<script>
+    function guestLogin() {
+        window.location.href = "main.html";
+    }
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
